@@ -1,5 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+<!-- home page will be replaced by blocked content-->
+{% block title %}Home Page{% endblock %}
+{% block content %}
 <head>
     <meta charset="UTF-8">
     <title>Calendly</title>
@@ -26,9 +28,6 @@ url: 'https://calendly.com/arod52295'
 </script>
 </div>
 <!-- Calendly inline widget end -->
-<br>
-<div>
-    <a href="http://127.0.0.1:5000">Home page</a>
-</div>
+
 </body>
-</html>
+{% endblock %}
