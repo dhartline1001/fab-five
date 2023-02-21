@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Home Page{% endblock %}
+{% block content %}
+  <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+  </head>
+
+  <body>
+
+
+    <h1>Login</h1>
+    <form action="#" method="post" style="position: absolute; top: 750px; right: 300px;" >
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username"><br><br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password"><br><br>
+      <input type="submit" value="Submit">
+    </form>
+
+    <br>
+    <img src="static/utlogo.png" alt="ut logo" style="position: absolute; top: 600px; right: 700px;">
+
+  </body>
+{% endblock %}
