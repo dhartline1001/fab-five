@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+<!-- home page will be replaced by blocked content-->
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>About</title>
+</head>
+<body>
+
+    <h1>Sign Up</h1>
+    <form method="POST" action="{{ url_for('signup_post') }}">
+      <label>Username</label>
+      <input type="text" name="username"><br>
+      <label>Email</label>
+      <input type="text" name="email"><br>
+      <label>Password</label>
+      <input type="password" name="password"><br>
+      <button type="submit">Sign Up</button>
+
+
+    </form>
+
+</body>
+{% endblock %}
+
