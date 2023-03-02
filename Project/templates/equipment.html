@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+<!-- home page will be replaced by blocked content-->
+{% block title %}Equipment Page{% endblock %}
+
+{% block navbar %}
+  {% if show_button %}
+  <li class="nav-item">
+    <a class="nav-link" href="/dashboard">Dashboard</a>
+  </li>
+  {% endif %}
+{% endblock %}
+
+
+{% block content %}
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>About</title>
+</head>
+<body>
+    <h1> Equipment Page!</h1>
+
+</body>
+{% endblock %}
