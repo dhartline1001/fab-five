@@ -1,0 +1,10 @@
+- finish emergency notification
+- make admin.html only visible to admin
+1. this can be accomplished by using the flask-login plugin
+
+- complete admin view
+- complete worker view
+- add new pictures to machines
+- create image or something that shows MS open
+- import db of school email addresses
+- hash passwords
