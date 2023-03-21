@@ -8,3 +8,13 @@
 - create image or something that shows MS open
 - import db of school email addresses
 - hash passwords
+
+
+Alex TODO:
+Flask-login plugin for authentication purposes
+
+Billy
+
+Jackie
+
+Darian 
