@@ -1,4 +1,4 @@
-   <img src="static/wordLogo.jpg" alt="ut logo" width="400">
+    <img src="static/wordLogo.jpg" alt="ut logo" width="400">
 
 
     <!-- Bootstrap NavBar located here -->
@@ -7,10 +7,10 @@
   <div class="col-sm-4" style="background-color: #E82F2FFF;"> </div>
   <div class="col-sm-7" style="background-color: #E82F2FFF;">
 
-    <nav class="navbar navbar-expand-lg navbar navbar-dark " style="background-color: #E82F2FFF;" >
+    <nav class="navbar navbar-expand  navbar-dark " style="background-color: #E82F2FFF;" >
         <!-- where nav bar was -->
       <a class="navbar-brand" href="http://127.0.0.1:5000"></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
@@ -31,7 +31,7 @@
                 <a class="dropdown-item" href="{{url_for('test')}}">Test Page</a>
 
                  <!-- if the current user is admin and admin in session, they will see admin page -->
-                {% if 'is_admin' in session and session['is_admin'] %}
+                {% if current_user.is_authenticated and current_user.is_admin %}
                 <a class="dropdown-item" href="http://127.0.0.1:5000/admin">Admin Page</a>
                 {% endif %}
             </div>
@@ -40,7 +40,7 @@
             <!-- Rest of NavBar-->
 
             <!-- if user is in current session, change navbar links -->
-            {% if "user_id" in session %}
+            {% if current_user.is_authenticated %}
                 <li class="nav-item active">
                     <a class="nav-link" href="http://127.0.0.1:5000/calendly">Reserve <span class="sr-only">(current)</span></a>
                 </li>
@@ -64,4 +64,5 @@
     </div>
     <div class="col-sm-1" style="background-color: #E82F2FFF;"> </div>
   </div>
+
 
