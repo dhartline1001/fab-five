@@ -1,11 +1,13 @@
-from flask import Flask, redirect, url_for, render_template, request, session, flash
+from flask import Flask, redirect, url_for, render_template, request, session, flash, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
-from flask_admin import Admin
+from flask_admin import Admin, BaseView, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
+from flask_login import UserMixin, login_user, current_user, LoginManager, logout_user, login_required
 
-from flask_login import UserMixin, login_user, current_user
+# hashing module
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'mysecretkey'
@@ -15,14 +17,19 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///userv3.db'
 # set life of session
 app.permanent_session_lifetime = timedelta(minutes=60)
 
+#login manager / access control
+login_manager = LoginManager()
+
+#redirect to login page if not logged in
+login_manager.login_view='auth.login'
+login_manager.init_app(app)
+
+
 # This class creates navbar link back to homepage of application from admin page
 class MainIndexLink(MenuLink):
     def get_url(self):
         return url_for("home")
 
-# flask admin stuff
-admin = Admin(app)
-admin.add_link(MainIndexLink(name="Main Page"))
 
 #initialize database
 with app.app_context():
@@ -48,7 +55,34 @@ with app.app_context():
     db.create_all()
 
 # allows admin to edit users in DB
-admin.add_view((ModelView(User, db.session)))
+# Define a custom base view with admin permission
+# only allow signed on admin to view admin DB page
+class MyModelView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('home'))
+
+class MyAdminIndexView(AdminIndexView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+# add main page link to db page, init admin page
+admin = Admin(app, index_view=MyAdminIndexView())
+admin.add_view(MyModelView(User, db.session))
+admin.add_link(MainIndexLink(name="Main Page"))
+
+
+
+
+
+# access user info to store id of logged-in user
+@ login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
+
 @app.route('/')
 def home():
     # index html file is called for homepage
@@ -115,16 +149,26 @@ def signup_post():
         email = request.form['email']
         password = request.form['password']
 
-        # check if a user with this email already exists
-        # if user already exists, do something else
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            # delete the existing user with this email
-            flash('Email address already in use')
-            return render_template('signup.html')
+        # check if a user with this email or username already exists
+        existing_email = User.query.filter_by(email=email).first()
+        existing_username = User.query.filter_by(username=username).first()
+        if existing_email or existing_username:
+            # flash correct error message and render signup page again
+            # this will consider duplicate email, username, or both
+            if existing_username and existing_email:
+                flash('Both Email and Username are already in use', category='error')
+                return render_template('signup.html')
+            elif existing_email:
+                flash('Email address already in use', category='error')
+                return render_template('signup.html')
+            else:
+                flash('Username already exists', category='error')
+                return render_template('signup.html')
+
+            # add password length field
 
         # create a new user
-        user = User(firstName=firstName, lastName=lastName, username=username, email=email, password=password)
+        user = User(firstName=firstName, lastName=lastName, username=username, email=email, password=generate_password_hash(password, method='sha256'))
         db.session.add(user)
         db.session.commit()
         flash('User created successfully')
@@ -139,30 +183,21 @@ def login_post():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = User.query.filter_by(username=username, password=password).first()
+        user = User.query.filter_by(username=username).first()
 
         if user:
-            session['user_id'] = user.id
-            session['is_admin'] = user.is_admin
-            return redirect('/user')
-        else:
-            flash("Invalid email or password")
-            return render_template('login.html')
+
+            # check hashed password
+            if check_password_hash(user.password, password):
+                login_user(user, remember=True)
+                flash("Login Successful!")
+                return redirect(url_for("home"))
+
+            else:
+                flash("Invalid email or password")
+                return redirect(url_for("login"))
     else:
-        return render_template('login.html')
-
-
-# retrieve the user from the database and render the dashboard template with the user's information
-@app.route("/user")
-def user():
-    if 'user_id' in session:
-        user_id = session['user_id']
-        user = User.query.filter_by(id=user_id).first()
-        flash("You have successfully logged in!")
-        return render_template('index.html', user=user)
-
-    else:
-        return redirect('/')
+        return redirect(url_for("login"))
 
 
 @app.route('/forgotPassword')
@@ -171,16 +206,18 @@ def forgotPassword():
     return render_template("forgotpassword.html")
 
 
+# pop user from session
 # flash a messaged saying you have successfully logged out
 # not completed
 @app.route('/logout')
+@login_required
 def logout():
-    session.pop('user_id', None)
+    logout_user()
     flash("You have successfully logged out!")
     return redirect(url_for("home"))
 
 
 
 if __name__ == '__main__':
-    # change host to ip4 address
+    # change host to ip4 address for mobile view
     app.run(debug=True, host = '0.0.0.0', port=8000)
