@@ -186,18 +186,16 @@ def login_post():
         user = User.query.filter_by(username=username).first()
 
         if user:
-
             # check hashed password
             if check_password_hash(user.password, password):
                 login_user(user, remember=True)
                 flash("Login Successful!")
                 return redirect(url_for("home"))
 
-            else:
-                flash("Invalid email or password")
-                return redirect(url_for("login"))
-    else:
-        return redirect(url_for("login"))
+        else:
+            flash("Invalid email or password")
+            return redirect(url_for("login"))
+
 
 
 @app.route('/forgotPassword')
