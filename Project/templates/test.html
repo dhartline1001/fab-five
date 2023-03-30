@@ -1,39 +1,28 @@
 {% extends "base.html" %}
-{% block title %}Home Page{% endblock %}
+{% block title %}Test Page{% endblock %}
 {% block content %}
+
 <head>
     <meta charset="UTF-8">
-    <title>This is a test file</title>
-    <a href="http://127.0.0.1:5000">Back to home</a>
+
+    <title>Office Status</title>
+
 </head>
 
 <!-- this is a comment -->
 
-<body>
-    <div>
-    <p> This is a test paragraph </p>
-    <p> This is another test paragraph </p>
-    <h1>This is the most important heading</h1>
-    <h2>This is the next important heading</h2>
 
-    <ul>
-        <li>This is a list</li>>
-    </ul>
-    </div>
+    <h1>Makerspace is {% if is_open %}open{% else %}closed{% endif %}!</h1>
 
-    <span>I am a <br>span tag</span>
-    <hr>
-    
-    <img src="static/utlogo.png" alt="ut logo">
-
-    <p style = "color: blue;"> This is blue</p>
-    <br>
-
-                <!-- add bootstrap nav bar here -->
-
-<h1>Whats your name?</h1>
+    {% if current_user.is_authenticated and (current_user.is_admin or current_user.is_worker) %}
+        <form action="{{ url_for('update_status') }}" method="post">
+            {% if is_open %}
+                <button type="submit" name="is_open" value="False" class="btn btn-danger">Close Makerspace</button>
+            {% else %}
+                <button type="submit" name="is_open" value="True" class="btn btn-success">Open Makerspace</button>
+            {% endif %}
+        </form>
+    {% endif %}
 
 
-
-</body>
 {% endblock %}
