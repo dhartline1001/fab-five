@@ -1,21 +1,23 @@
-from flask import Flask, redirect, url_for, render_template, request, session, flash, Blueprint
+from flask import Flask, redirect, url_for, render_template, request, session, flash, Blueprint, g
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from flask_admin import Admin, BaseView, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
 from flask_login import UserMixin, login_user, current_user, LoginManager, logout_user, login_required
-
-# hashing module
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+# this will change before production
 app.secret_key = 'mysecretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///userv3.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# session data only stored for 60
 
 
-# set life of session
-app.permanent_session_lifetime = timedelta(minutes=60)
+
+
+
 
 #login manager / access control
 login_manager = LoginManager()
@@ -23,6 +25,11 @@ login_manager = LoginManager()
 #redirect to login page if not logged in
 login_manager.login_view='auth.login'
 login_manager.init_app(app)
+
+from datetime import datetime, timedelta
+from flask_login import current_user, logout_user
+
+
 
 
 # This class creates navbar link back to homepage of application from admin page
@@ -46,13 +53,36 @@ with app.app_context():
         is_admin = db.Column(db.Boolean, default=False)
         is_worker = db.Column(db.Boolean, default=False)
 
-        # TODO: set admin varaibles and add first/ last name once DB fixed
+        laser_training = db.Column(db.Boolean, default=False)
+
 
          # return string when access db
         def __repr__(self):
             return '<Name %r>' % self.id
 
+
+    class MakerspaceStatus(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        is_open = db.Column(db.Boolean, default=False)
+
+
+    # create a new MakerspaceStatus object
+    makerspace_status = MakerspaceStatus(is_open=False)
+
+    # add the object to the database session
+    #db.session.add(makerspace_status)
+
+    # commit the changes to the database
+    db.session.commit()
+
+
+
     db.create_all()
+
+
+
+
+
 
 # allows admin to edit users in DB
 # Define a custom base view with admin permission
@@ -83,11 +113,11 @@ def load_user(id):
     return User.query.get(int(id))
 
 
+
 @app.route('/')
 def home():
-    # index html file is called for homepage
+    return render_template('index.html')
 
-    return render_template("index.html")
 
 @app.route('/login')
 def login():
@@ -102,9 +132,22 @@ def people():
     return render_template("people.html")
 
 @app.route('/test')
+#@login_required
 def test():
-    # test html file is called for a test page
-    return render_template("test.html")
+    """if not current_user.is_admin:
+        return redirect(url_for('home'))"""
+
+    makerspace_status = MakerspaceStatus.query.first()
+    return render_template('test.html', is_open=makerspace_status.is_open)
+
+@app.route('/test/update_status', methods=['POST'])
+@login_required
+def update_status():
+    makerspace_status = MakerspaceStatus.query.first()
+    makerspace_status.is_open = (request.form['is_open'] == 'True')
+    db.session.commit()
+
+    return redirect(url_for('test'))
 
 
 @app.route('/calendly')
@@ -142,7 +185,6 @@ def signup():
 def signup_post():
     if request.method == 'POST':
         # get the form data
-        # TODO: add admin/worker info
         firstName = request.form['firstName']
         lastName = request.form['lastName']
         username = request.form['username']
@@ -189,6 +231,7 @@ def login_post():
             # check hashed password
             if check_password_hash(user.password, password):
                 login_user(user, remember=True)
+                # Make session permanent
                 flash("Login Successful!")
                 return redirect(url_for("home"))
 
@@ -213,7 +256,6 @@ def logout():
     logout_user()
     flash("You have successfully logged out!")
     return redirect(url_for("home"))
-
 
 
 if __name__ == '__main__':
