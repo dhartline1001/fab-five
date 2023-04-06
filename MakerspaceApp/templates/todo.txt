@@ -1,0 +1,29 @@
+- finish emergency notification
+- logic for reserve button
+
+- forgot password
+- final decision on calendly implementation
+
+
+- clean up worker/ admin view
+
+- import db of school email addresses
+
+- further security issues
+
+- limit session time
+
+
+profile view:
+- change password
+- training thats completed
+- Hello{{name}}
+
+- form
+_ full name
+-  email
+- ID
+- password
+
+blue, for success
+red for alert

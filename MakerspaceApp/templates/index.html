@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+<!-- home page will be replaced by blocked content-->
+{% block title %}Home Page{% endblock %}
+{% block content %}
+
+    <!--Code Homepage below  -->
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<!-- Header with full-height image -->
+<header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
+  <div class="w3-display-left w3-text-white" style="padding:227px 127px">
+    <span class="w3-jumbo">The Makerspace</span><br>
+    <span class="w3-large">Where ideas come to life.</span>
+      <br><br>
+
+    <span <p>
+      <a class="w3-white w3-padding-large w3-large w3-margin-top w3-opacity w3-hover-opacity-off">Makerspace is {% if is_open %}open{% else %}closed{% endif %}!</a>
+        </p> </span>
+  </div>
+</header>
+
+
+<!-- About Section -->
+<div class="w3-container" style="padding:128px 16px" id="about">
+  <h3 class="w3-center">ABOUT THE MAKERSPACE</h3>
+  <p class="w3-center w3-large">The Makerspace on the 6th floor of UT's Technology Building provides Computer Science (CS) majors and minors with resources for rapid prototyping.
+    It's a place where CS students can design, fabricate, assemble, and test their ideas related to projects in the Computer Science curriculum. It supports various phases of project
+    development from design, prototyping, and testing to fabrication, assembly, and production. The Makerspace is currently only available to CS majors and minors.</p>
+  <div class="w3-row-padding w3-center" style="margin-top:64px">
+
+<!-- Promo Section - "We know design" -->
+<div class="w3-container w3-light-grey" style="padding:50px 16px">
+  <div class="w3-row-padding">
+    <div class="w3-col m6" style="padding-top:85px">
+      <h3>We know design.</h3>
+      <p>The Makerspace is a platform that showcases the impressive works and projects of its student creators.
+        Each project serves as a window into the students' creativity, ingenuity, and problem-solving skills.</p>
+    </div>
+    <div class="w3-col m6">
+      <img class="w3-image w3-round-large" src="https://www.w3schools.com/w3images/phone_buildings.jpg" alt="Buildings" width="700" height="394">
+    </div>
+  </div>
+</div>
+
+
+
+</body>
+
+
+{% endblock %}
