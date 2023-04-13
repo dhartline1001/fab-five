@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+<!-- home page will be replaced by blocked content-->
+{% block title %}Profile Page{% endblock %}
+{% block content %}
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>About</title>
+</head>
+<body>
+    <h1>Hello {{current_user.first_name}}!</h1>
+
+    <!-- Only admin or worker will be able to see the button to change the status of
+    makerspace-->
+    {% if current_user.is_authenticated and (current_user.is_admin or current_user.is_worker) %}
+        <form action="{{ url_for('update_status') }}" method="post">
+            {% if is_open %}
+                <button type="submit" name="is_open" value="False" class="btn btn-danger">Close Makerspace</button>
+            {% else %}
+                <button type="submit" name="is_open" value="True" class="btn btn-success">Open Makerspace</button>
+            {% endif %}
+        </form>
+    {% endif %}
+    <br>
+    <h2>Basic Information</h2>
+    <br>
+
+    <!-- Display user data-->
+    <table class="table table-bordered">
+  <tr>
+    <th>First Name:</th>
+    <td>{{ current_user.first_name }}</td>
+  </tr>
+  <tr>
+    <th>Last Name:</th>
+    <td>{{ current_user.last_name }}</td>
+  </tr>
+  <tr>
+    <th>Email:</th>
+    <td>{{ current_user.email }}</td>
+  </tr>
+        <tr>
+    <th>Username:</th>
+    <td>{{ current_user.username }}</td>
+  </tr>
+  <tr>
+    <th>Student ID:</th>
+    <td>{{ current_user.student_id }}</td>
+  </tr>
+  <tr>
+    <th>Password</th>
+    <td colspan="2">
+      <a href="#" class="text-primary text-decoration-underline" data-toggle="collapse" data-target="#change-password-form">
+        Change Password
+      </a>
+
+      <div id="change-password-form" class="collapse mt-3">
+        <form method="POST" action="{{ url_for('change_password') }}">
+          <div class="form-group">
+            <label for="old-password">Old Password:</label>
+            <input type="password" name="old_password" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="new-password">New Password:</label>
+            <input type="password" name="new_password" class="form-control" required>
+          </div>
+
+            <div class="form-group">
+            <label for="confirm-new-password">Confirm New Password:</label>
+            <input type="password" name="confirm_new_password" class="form-control" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </td>
+  </tr>
+</table>
+
+<h2>Completed training:</h2>
+
+<div class="container-fluid no-padding">
+  <div class="row ">
+    <div class="col-md-4">
+      <ul class="list-group">
+        {% if current_user.printer_3d %}
+          <li class="list-group-item">3D Printer Training</li>
+        {% endif %}
+        {% if current_user.vinyl_cutter %}
+          <li class="list-group-item">Vinyl Cutter Training</li>
+        {% endif %}
+        {% if current_user.heat_press %}
+          <li class="list-group-item">Heat Press Training</li>
+        {% endif %}
+        {% if current_user.vacuum_former %}
+          <li class="list-group-item">Vacuum Former Training</li>
+        {% endif %}
+        {% if current_user.cnc_machine %}
+          <li class="list-group-item">CNC Machine Training</li>
+        {% endif %}
+        {% if current_user.soldering_station %}
+          <li class="list-group-item">Soldering Station Training</li>
+        {% endif %}
+        {% if current_user.electronics_workstation %}
+          <li class="list-group-item">Electronics Workstation Training</li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+</body>
+{% endblock %}

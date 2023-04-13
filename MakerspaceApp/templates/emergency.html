@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+<!-- home page will be replaced by blocked content-->
+{% block title %}Emergency Page{% endblock %}
+{% block content %}
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Emergency page</title>
+
+      <style>
+    html, body {
+      height: 100%;
+    }
+
+    .form-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100%;
+      padding: 1rem;
+    }
+
+    .form-box {
+      background-color: #ffffff;
+      padding: 2rem;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        width: 50%;
+    }
+     </style>
+</head>
+<body>
+
+
+    <h1>Send SMS</h1>
+    <p1>Please use this button only in the event of an actual emergency.
+        Your name will automatically be recorded when the message is sent.
+    </p1>
+    <br>
+
+
+      <!-- Form with Bootstrap classes -->
+  <div class="form-container">
+    <div class="form-box">
+      <form action="/emergency" method="post">
+        <div class="form-group">
+          <label for="phone_number">Phone Number:</label>
+          <input type="text" name="phone_number" id="phone_number" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="message">Message:</label>
+          <textarea name="message" id="message" class="form-control" rows="4" required></textarea>
+        </div>
+        <input type="submit" value="Send SMS" class="btn btn-primary">
+      </form>
+    </div>
+  </div>
+
+
+
+
+</body>
+{% endblock %}
