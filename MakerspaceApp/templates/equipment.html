@@ -13,39 +13,8 @@
 
 {% block content %}
 <head>
-    <style>
-        .cards-container {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: space-between;
-        }
 
-        .w3-card {
-          box-sizing: border-box;
-          flex-basis: 32%;
-          margin-bottom: 24px;
-          padding: 16px;
-          background-color: #fff;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Responsive styles */
-        @media (max-width: 767px) {
-          .w3-card {
-            flex-basis: 48%;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .w3-card {
-            flex-basis: 100%;
-          }
-        }
-
-    </style>
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/equipment_styles.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <title>About</title>
@@ -54,22 +23,21 @@
 <body>
 <!-- Equipment Section -->
 <!-- DESKTOP COMPUTERS -->
-<div class="w3-container" style="padding:128px 16px" id="equipment">
-  <h3 class="w3-center">EQUIPMENT</h3>
+<div class="w3-container" style="padding:75px 16px" id="equipment">
+  <h3 class="w3-center">Makerspace Equipment</h3>
 </div>
 
 
 
  <div class="cards-container">
-      <div class="w3-card">
-        <img src="static/desktop.jpg" alt="DC" style="width: 100%;">
+      <div class="equipment-card">
+        <img src="https://raw.githubusercontent.com/dhartline1001/fab-five/main/MakerspaceApp/static/desktop.jpg" style="width: 100%;" class="equipment-card-img">
         <div class="w3-container" style="padding:24px"></div>
         <div class="w3-container">
           <h3>Desktop computers</h3>
           <p class="w3-opacity">Design, Prototyping, and Testing</p>
           <button onclick="toggleContent(this)" data-target="hiddenContent1">Click for more information</button>
           <div id="hiddenContent1" style="display:none;">
-            Content 1
             <p>Four HP EliteOne 800 G6 all-in-one desktop PCs allow students to create designs and connect to various devices that take their ideas from concept to reality.</p>
           </div>
         </div>
@@ -81,15 +49,14 @@
 <!-- SOLDERING STATIONS -->
 
 
-  <div class="w3-card">
-    <img src="static/1soldering.jpg" alt="SS" style="width: 100%;">
+  <div class="equipment-card">
+    <img src="https://raw.githubusercontent.com/dhartline1001/fab-five/main/MakerspaceApp/static/1soldering.jpg" style="width: 100%;" class="equipment-card-img">
     <div class="w3-container" style="padding:24px"></div>
     <div class="w3-container">
       <h3>Soldering stations</h3>
       <p class="w3-opacity">Design, Prototyping, and Testing</p>
       <button onclick="toggleContent(this)" data-target="hiddenContent2">Click for more information</button>
       <div id="hiddenContent2" style="display: none;">
-        Content 2
         <p>Three soldering stations allow students to populate custom milled printed circuit boards with electronic components.</p>
       </div>
     </div>
@@ -100,15 +67,14 @@
 
 <!-- ELECTRONICS STATION -->
 
-  <div class="w3-card">
-    <img src="static/electronics.jpg" alt="ES" style="width: 100%;">
+  <div class="equipment-card">
+    <img src="https://raw.githubusercontent.com/dhartline1001/fab-five/main/MakerspaceApp/static/electronics.jpg" style="width: 100%;" class="equipment-card-img">
     <div class="w3-container" style="padding:24px"></div>
     <div class="w3-container">
       <h3>Electronics Station</h3>
       <p class="w3-opacity">Design, Prototyping, and Testing</p>
       <button onclick="toggleContent(this)" data-target="hiddenContent3">Click for more information</button>
       <div id="hiddenContent3" style="display: none;">
-        Content 3
         <p>An oscilloscope, several DC power supplies, a function generator, and both bench and handheld digital multi-meters support the testing and powering of electronic circuits fabricated by students.</p>
       </div>
     </div>
@@ -118,15 +84,14 @@
 
 <!-- LASERS -->
 
-  <div class="w3-card">
-    <img src="static/1laser.jpg" alt="LS" style="width: 100%;">
+  <div class="equipment-card">
+    <img src="https://raw.githubusercontent.com/dhartline1001/fab-five/main/MakerspaceApp/static/1laser.jpg" style="width: 100%;" class="equipment-card-img">
     <div class="w3-container" style="padding:24px"></div>
     <div class="w3-container">
       <h3>Lasers</h3>
       <p class="w3-opacity">Fabrication</p>
       <button onclick="toggleContent(this)" data-target="hiddenContent4">Click for more information</button>
       <div id="hiddenContent4" style="display: none;">
-        Content 4
         <p>Two Glowforge Pro desktop lasers enable cutting and engraving of wood, acrylic, glass, fabric, cardboard, leather, and some metals. They accommodate stock that is 20” wide by 12” long or greater, at a maximum height of 2”. The lasers can be dangerous and can only be accessed through a Makerspace worker.</p>
       </div>
     </div>
@@ -136,8 +101,8 @@
 
 <!-- 3D PRINTERS -->
 
-  <div class="w3-card">
-    <img src="static/3D.jpg" alt="3DP" style="width: 100%;">
+  <div class="equipment-card">
+    <img src="https://raw.githubusercontent.com/dhartline1001/fab-five/main/MakerspaceApp/static/3D.jpg" style="width: 100%;" class="equipment-card-img">
     <div class="w3-container" style="padding:24px"></div>
     <div class="w3-container">
       <h3>3D Printers</h3>
@@ -154,8 +119,8 @@
 
 <!-- CNC MACHINE -->
 
-  <div class="w3-card">
-    <img src="static/CNC.jpg" alt="CNC" style="width: 100%;">
+  <div class="equipment-card">
+    <img src="https://raw.githubusercontent.com/dhartline1001/fab-five/main/MakerspaceApp/static/CNC.jpg" style="width: 100%;" class="equipment-card-img">
     <div class="w3-container" style="padding:24px"></div>
     <div class="w3-container">
       <h3>CNC Machine</h3>
@@ -171,8 +136,8 @@
 
 <!-- VACUUM FORMER -->
 
-  <div class="w3-card">
-    <img src="static/1vacformer.jpg" alt="VF" style="width: 100%;">
+  <div class="equipment-card">
+    <img src="https://raw.githubusercontent.com/dhartline1001/fab-five/main/MakerspaceApp/static/Vacuum%20Former.jpeg" style="width: 100%;" class="equipment-card-img">
     <div class="w3-container" style="padding:24px"></div>
     <div class="w3-container">
       <h3>Vacuum Former</h3>
@@ -188,8 +153,8 @@
 
 <!-- VINYL CUTTER -->
 
-  <div class="w3-card">
-    <img src="static/1vinyl.jpg" alt="VC" style="width: 100%;">
+  <div class="equipment-card">
+    <img src="https://raw.githubusercontent.com/dhartline1001/fab-five/main/MakerspaceApp/static/1vinyl.jpg" style="width: 100%;" class="equipment-card-img">
     <div class="w3-container" style="padding:24px"></div>
     <div class="w3-container">
       <h3>Vinyl Cutter</h3>
@@ -204,8 +169,8 @@
 
 <!-- HEAT PRESS -->
 
-  <div class="w3-card">
-    <img src="static/heat.jpg" alt="HP" style="width: 100%;">
+  <div class="equipment-card">
+    <img src="https://raw.githubusercontent.com/dhartline1001/fab-five/main/MakerspaceApp/static/heat.jpg" style="width: 100%;" class="equipment-card-img">
     <div class="w3-container" style="padding:24px"></div>
     <div class="w3-container">
       <h3>Heat Press</h3>
@@ -221,8 +186,8 @@
 
 <!-- ASSEMBLY STATIONS -->
 
-  <div class="w3-card">
-    <img src="static/assembly.jpg" alt="AS" style="width: 100%;">
+  <div class="equipment-card">
+    <img src="https://raw.githubusercontent.com/dhartline1001/fab-five/main/MakerspaceApp/static/assembly.jpg" style="width: 100%;" class="equipment-card-img">
     <div class="w3-container" style="padding:24px"></div>
     <div class="w3-container">
       <h3>Assembly Stations</h3>
@@ -238,8 +203,8 @@
 
 <!-- PRODUCTION STATION 1 -->
 
-  <div class="w3-card">
-    <img src="static/1production.jpg" alt="PS1" style="width: 100%;">
+  <div class="equipment-card">
+    <img src="https://raw.githubusercontent.com/dhartline1001/fab-five/main/MakerspaceApp/static/1production.jpg" style="width: 100%;" class="equipment-card-img">
     <div class="w3-container" style="padding:24px"></div>
     <div class="w3-container">
       <h3>Production Station</h3>
@@ -255,8 +220,8 @@
 
 <!-- PRODUCTION STATION 2 -->
 
-  <div class="w3-card">
-    <img src="static/1production.jpg" alt="PS2" style="width: 100%;">
+  <div class="equipment-card">
+    <img src="https://raw.githubusercontent.com/dhartline1001/fab-five/main/MakerspaceApp/static/1production.jpg" style="width: 100%;" class="equipment-card-img">
     <div class="w3-container" style="padding:24px"></div>
     <div class="w3-container">
       <h3>Production Station</h3>
@@ -280,15 +245,9 @@
   </div>
 </div>
 
-<script>
-  function toggleContent(button) {
-    const targetId = button.getAttribute('data-target');
-    const targetElement = document.getElementById(targetId);
-    const isHidden = targetElement.style.display === 'none';
 
-    targetElement.style.display = isHidden ? 'block' : 'none';
-  }
-</script>
+<script src="{{ url_for('static', filename='js/equipment_scripts.js') }}"></script>
+
 
 
 </body>
