@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+<!-- home page will be replaced by blocked content-->
+{% block title %}Profile Page{% endblock %}
+
+{% block head_extra %}
+    <!-- Include FullCalendar and its dependencies  plugins: ['dayGrid', 'interaction', 'timeGrid', 'list'], // Add the plugins you want to use-->
+    <link href='https://unpkg.com/fullcalendar@5/main.min.css' rel='stylesheet' />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base_styles.css') }}">
+{% endblock %}
+
+
+
+
+{% block content %}
+
+
+    <div id="calendar"></div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>  <!-- Include jQuery -->
+<script src='https://unpkg.com/fullcalendar@5/main.min.js'></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            timeZone: 'UTC',
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+            },
+            editable: true,
+            dayMaxEvents: true,
+            events: '/fetch_events',
+            eventColor: '#378006',
+            dateClick: function(info) {  // Add this callback to handle date cell clicks
+                $('#eventDate').val(info.dateStr);  // Pre-fill the date
+                $('#eventModalLabel').text('New Event') // reset title
+                $('#eventModal').modal('show');  // Open the modal
+            },
+
+            eventClick: function(info) {
+                $('#viewEventTitle').text(info.event.title);
+                $('#viewEventStart').text(info.event.start.toISOString());
+                if (info.event.end) {
+                    $('#viewEventEnd').text(info.event.end.toISOString());
+                } else {
+                    $('#viewEventEnd').text('');
+                }
+
+                $('#viewEventModal')
+                    .data('eventId', info.event.id)
+                    .modal('show');
+            }
+
+
+        });
+
+        calendar.render();
+        var editMode = false; // Add this line to create the flag
+        var eventId; // Save the event ID in this variable
+
+
+        // Handle form submission
+    $('#deleteEventButton').click(function() {
+        eventId = $('#viewEventModal').data('eventId');
+
+        $.ajax({
+            url: '/delete_event/' + eventId,
+            type: 'DELETE',
+            success: function(response) {
+                if (response.success) {
+                    calendar.getEventById(eventId).remove();
+                    $('#viewEventModal').modal('hide');
+                } else {
+                    alert('Error deleting event');
+                }
+            },
+            error: function(jqXHR) {
+                alert('Error deleting event: ' + jqXHR.responseText);
+            }
+        });
+    });
+
+
+    $('#saveEventButton').click(function() {
+    var title = $('#eventName').val();
+    var start = $('#eventDate').val() + 'T' + ($('#startTime').val() || '00:00');
+    var end = $('#eventDate').val() + 'T' + ($('#endTime').val() || '00:00'); // default end time to 00:00
+    console.log('Start:', start);
+    console.log('End:', end);
+
+    if (title) {
+        if (editMode) { // If the form is in edit mode
+            // Update the event on the server
+            $.ajax({
+                url: '/update_event/' + eventId,
+                type: 'PUT',
+                data: JSON.stringify({title: title, start: start, end: end}),
+                contentType: 'application/json',
+                success: function(response) {
+                    if (response.success) {
+                        // Update the event on the calendar
+                        var event = calendar.getEventById(eventId);
+                        event.setProp('title', title);
+                        event.setStart(start);
+                        if (end) {
+                            event.setEnd(end);
+                        }
+                        $('#viewEventModal').modal('hide');
+                        $('#eventModal').modal('hide');
+                        editMode = false;
+                    } else {
+                        alert('Error updating event');
+                    }
+                },
+                error: function(jqXHR) {
+                    alert('Error updating event: ' + jqXHR.responseText);
+                }
+            });
+        } else { // If the form is in new event mode
+            // Create the event on the server
+            $.ajax({
+                url: '/create_event',
+                type: 'POST',
+                data: JSON.stringify({title: title, start: start, end: end}),
+                contentType: 'application/json',
+                success: function(response) {
+                    if (response.success) {
+                        // Add the event to the calendar
+                        calendar.addEvent({
+                            id: response.id,
+                            title: title,
+                            start: start,
+                            end: end,
+                            color: '#378006'
+                        });
+                    } else {
+                        alert('Error creating event');
+                    }
+                },
+                error: function(jqXHR) {
+                    alert('Error creating event: ' + jqXHR.responseText);
+                }
+            });
+        }
+
+        // Clear the form fields and close the modal
+        $('#eventName').val('');
+        $('#startTime').val('');
+        $('#endTime').val('');
+        $('#eventModal').modal('hide');
+
+        editMode = false; // Reset the flag
+    } else {
+        alert('Please enter an event name.');
+    }
+});
+
+        // Hide modal and clear data
+    $('#eventModal').on('hidden.bs.modal', function () {
+        $('#eventName').val('');
+        $('#eventDate').val('');
+        $('#startTime').val('');
+        $('#endTime').val('');
+        editMode = false; // Reset the flag here when modal is closed
+        $('#eventModalLabel').text('New Event');  // Reset the modal title
+    })
+
+    $('#editEventButton').click(function() {
+        editMode = true; // Set the flag to true
+        eventId = $('#viewEventModal').data('eventId');
+        var event = calendar.getEventById(eventId);
+
+        // Pre-fill the form with the event's data
+        $('#eventName').val(event.title);
+        $('#eventDate').val(event.start.toISOString().substring(0,10));
+        if (event.end) {
+            $('#startTime').val(event.start.toISOString().substring(11,16));
+            $('#endTime').val(event.end.toISOString().substring(11,16));
+        } else {
+            $('#startTime').val('');
+            $('#endTime').val('');
+        }
+
+        // Update the modal title
+        $('#eventModalLabel').text('Edit Event');
+
+        // Show the form modal
+        $('#eventModal').modal('show');
+        $('#viewEventModal').modal('hide'); // Hide the view modal when edit is clicked
+    });
+
+
+});
+
+
+</script>
+
+<div class="modal" tabindex="-1" role="dialog" id="eventModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">New Event</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="eventName">Event Name</label>
+                <input type="text" id="eventName" name="eventName" required>
+                <label for="eventDate">Event Date</label>
+                <input type="date" id="eventDate" name="eventDate" required>
+                <label for="startTime">Start Time</label>
+                <input type="time" id="startTime" name="startTime">
+                <label for="endTime">End Time</label>
+                <input type="time" id="endTime" name="endTime">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveEventButton">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="viewEventModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewEventTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="viewEventStart"></p>
+                <p id="viewEventEnd"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="editEventButton">Edit</button>
+                <button type="button" class="btn btn-danger" id="deleteEventButton">Delete</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+    $('#eventModal .btn-secondary').click(function() {
+    $('#eventModal').modal('hide');
+    });
+
+    $('#viewEventModal .btn-secondary').click(function() {
+    $('#viewEventModal').modal('hide');
+
+    });
+
+    </script>
+
+{% endblock %}
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1>Hello {{current_user.first_name}}!</h1>
+            </div>
+        </div>
+
+        {% if current_user.is_authenticated and (current_user.is_admin or current_user.is_worker) %}
+        <div class="row d-flex justify-content-center">
+            <div class="col-auto">
+                <form action="{{ url_for('update_status') }}" method="post">
+                    {% if is_open %}
+                        <button type="submit" name="is_open" value="False" class="btn btn-danger">Close Makerspace</button>
+                    {% else %}
+                        <button type="submit" name="is_open" value="True" class="btn btn-success">Open Makerspace</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <br>
+    <div class="container">
+    <div class="row d-flex">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="card-title">Basic Information</h2>
+                    <!-- Display user data-->
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>First Name:</th>
+                            <td>{{ current_user.first_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Last Name:</th>
+                            <td>{{ current_user.last_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ current_user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Username:</th>
+                            <td>{{ current_user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>Student ID:</th>
+                            <td>{{ current_user.student_id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Password</th>
+                            <td colspan="2">
+                                <a href="#" class="text-primary text-decoration-underline" data-toggle="collapse" data-target="#change-password-form">
+                                    Change Password
+                                </a>
+                                <div id="change-password-form" class="collapse mt-3">
+                                    <form method="POST" action="{{ url_for('change_password') }}">
+                                        <div class="form-group">
+                                            <label for="old-password">Old Password:</label>
+                                            <input type="password" name="old_password" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="new-password">New Password:</label>
+                                            <input type="password" name="new_password" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="confirm-new-password">Confirm New Password:</label>
+                                            <input type="password" name="confirm_new_password" class="form-control" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="card-title">Completed training:</h2>
+                    <!-- Completed Training List -->
+                    <ul class="list-group">
+                        {% if current_user.printer_3d %}
+                        <li class="list-group-item">3D Printer Training</li>
+                        {% endif %}
+                        {% if current_user.vinyl_cutter %}
+                        <li class="list-group-item">Vinyl Cutter Training</li>
+                        {% endif %}
+                        {% if current_user.heat_press %}
+                        <li class="list-group-item">Heat Press Training</li>
+                        {% endif %}
+                        {% if current_user.vacuum_former %}
+                        <li class="list-group-item">Vacuum Former Training</li>
+                        {% endif %}
+                        {% if current_user.cnc_machine %}
+                        <li class="list-group-item">CNC Machine Training</li>
+                        {% endif %}
+                        {% if current_user.soldering_station %}
+                        <li class="list-group-item">Soldering Station Training</li>
+                        {% endif %}
+                        {% if current_user.electronics_workstation %}
+                        <li class="list-group-item">Electronics Workstation Training</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+
+    <br>

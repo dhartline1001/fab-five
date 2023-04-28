@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+<!-- home page will be replaced by blocked content-->
+{% block title %}Reserve{% endblock %}
+
+{% block head_extra %}
+    <!-- Include FullCalendar and its dependencies -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base_styles.css') }}">
+{% endblock %}
+
+
+{% block content %}
+    <div id="calendar"></div>
+    <!-- Modal to display events -->
+    <div id="modal" style="display:none;">
+        <h2>Events on <span id="modal-date"></span></h2>
+        <div id="modal-events"></div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#calendar').fullCalendar({
+                events: '/fetch_events', // Fetch events from the Flask route
+                editable: false, // Make the calendar read-only
+                eventColor: '#378006', // Set a default color for events
+
+                dayClick: function(date, jsEvent, view) {
+                    // Clear the modal
+                    $('#modal-date').text('');
+                    $('#modal-events').html('');
+
+                    // Set the date in the modal
+                    $('#modal-date').text(date.format());
+
+                    // Fetch events for this day
+                    var events = $('#calendar').fullCalendar('clientEvents', function(event) {
+                        return moment(event.start).isSame(date, 'day');
+                    });
+
+                    // Add events to the modal
+                    $.each(events, function(i, event) {
+                        $('#modal-events').append('<p>' + event.title + '</p>');
+                    });
+
+                    // Show the modal
+                    $('#modal').show();
+                }
+            });
+        });
+    </script>
+
+{% endblock %}
